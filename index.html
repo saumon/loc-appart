@@ -180,6 +180,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(8px);
+            z-index: 1000;
+            /* S'assurer que les boutons sont toujours visibles */
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .lightbox-nav:hover {
@@ -193,6 +200,17 @@
 
         .lightbox-next {
             right: 2rem;
+        }
+
+        /* Amélioration de la visibilité des boutons sur tous les écrans */
+        .lightbox-nav:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+
+        .lightbox-nav:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(0.95);
         }
 
         .lightbox-close {
@@ -279,6 +297,37 @@
 
             .photo-card img {
                 height: 180px;
+            }
+
+            /* Amélioration de l'affichage des boutons de navigation sur très petits écrans */
+            .lightbox-nav {
+                font-size: 1rem;
+                padding: 0.7rem;
+                z-index: 1001;
+                opacity: 0.9;
+            }
+
+            .lightbox-prev {
+                left: 0.5rem;
+            }
+
+            .lightbox-next {
+                right: 0.5rem;
+            }
+
+            .lightbox-close {
+                top: 0.5rem;
+                right: 0.5rem;
+                font-size: 1rem;
+                padding: 0.7rem;
+                z-index: 1001;
+            }
+
+            /* S'assurer que les boutons restent visibles */
+            .lightbox-nav:active,
+            .lightbox-close:active {
+                opacity: 1;
+                background: rgba(255, 255, 255, 0.3);
             }
         }
 
