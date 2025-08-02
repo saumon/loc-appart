@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appartement à louer - Galerie Photos</title>
+    <meta name="description" content="Découvrez les photos de cet appartement à louer">
+    
+    <!-- Favicon avec icône maison -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+    
+    <!-- Icônes Font Awesome pour les boutons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-color: #334155;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-light: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-large: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #e2e8f0 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--surface-color);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .gallery-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem 3rem;
+        }
+
+        .gallery-stats {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 0;
+        }
+
+        .photo-card {
+            background: var(--surface-color);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-large);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            display: block;
+        }
+
+        .photo-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-card:hover .photo-overlay {
+            transform: translateY(0);
+        }
+
+        .photo-number {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Lightbox moderne */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 12px;
+            box-shadow: var(--shadow-large);
+            object-fit: contain;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-prev {
+            left: 2rem;
+        }
+
+        .lightbox-next {
+            right: 2rem;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .photo-card img {
+                height: 200px;
+            }
+
+            .lightbox-nav {
+                font-size: 1.2rem;
+                padding: 0.8rem;
+            }
+
+            .lightbox-prev {
+                left: 1rem;
+            }
+
+            .lightbox-next {
+                right: 1rem;
+            }
+
+            .lightbox-close {
+                top: 1rem;
+                right: 1rem;
+                font-size: 1.2rem;
+                padding: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1.5rem 1rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .photo-card img {
+                height: 180px;
+            }
+        }
+
+        /* Animations d'entrée */
+        .photo-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Lazy loading state */
+        .photo-card img[data-src] {
+            opacity: 0.3;
+            filter: blur(2px);
+            transition: all 0.3s ease;
+        }
+
+        .photo-card img.loaded {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        /* Loader pour les images */
+        .photo-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header moderne -->
+    <div class="header">
+        <h1><i class="fas fa-home"></i> Appartement à louer</h1>
+        <p>Découvrez l'appartement à travers cette galerie photo interactive</p>
+    </div>
+
+    <!-- Container principal -->
+    <div class="gallery-container">
+        <div class="gallery-stats">
+            <i class="fas fa-images"></i> 37 photos disponibles
+        </div>
+
+        <!-- Galerie photos moderne -->
+        <div class="gallery">
+            <div class="photo-card" onclick="openLightbox(0)">
+                <img src="photos/thumbnails/IMG_20231129_131418~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 1/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(1)">
+                <img src="photos/thumbnails/IMG_20231129_131818~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 2/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(2)">
+                <img src="photos/thumbnails/IMG_20231129_131849~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 3/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(3)">
+                <img src="photos/thumbnails/IMG_20231129_131957~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 4/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(4)">
+                <img src="photos/thumbnails/IMG_20231129_132005~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 5/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(5)">
+                <img src="photos/thumbnails/IMG_20231129_132254~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 6/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(6)">
+                <img src="photos/thumbnails/IMG_20231129_132338~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 7/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(7)">
+                <img src="photos/thumbnails/IMG_20231129_132401~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 8/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(8)">
+                <img src="photos/thumbnails/IMG_20231129_132618~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 9/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(9)">
+                <img src="photos/thumbnails/IMG_20231129_133205~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 10/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(10)">
+                <img src="photos/thumbnails/IMG_20231129_133320~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 11/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(11)">
+                <img src="photos/thumbnails/IMG_20231129_133337~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 12/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(12)">
+                <img src="photos/thumbnails/IMG_20231129_133449~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 13/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(13)">
+                <img src="photos/thumbnails/IMG_20231129_133651~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 14/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(14)">
+                <img src="photos/thumbnails/IMG_20231129_133724~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 15/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(15)">
+                <img src="photos/thumbnails/IMG_20231129_133745~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 16/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(16)">
+                <img src="photos/thumbnails/IMG_20231129_133844~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 17/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(17)">
+                <img src="photos/thumbnails/IMG_20231129_133933~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 18/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(18)">
+                <img src="photos/thumbnails/IMG_20231129_134029~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 19/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(19)">
+                <img src="photos/thumbnails/IMG_20231129_134046~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 20/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(20)">
+                <img src="photos/thumbnails/IMG_20231129_134118~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 21/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(21)">
+                <img src="photos/thumbnails/IMG_20231129_134144~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 22/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(22)">
+                <img src="photos/thumbnails/IMG_20231129_134158~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 23/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(23)">
+                <img src="photos/thumbnails/IMG_20231129_134257~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 24/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(24)">
+                <img src="photos/thumbnails/IMG_20231129_134331~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 25/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(25)">
+                <img src="photos/thumbnails/IMG_20231129_134539~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 26/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(26)">
+                <img src="photos/thumbnails/IMG_20231129_134716~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 27/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(27)">
+                <img src="photos/thumbnails/IMG_20231129_135016~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 28/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(28)">
+                <img src="photos/thumbnails/IMG_20231129_135202~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 29/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(29)">
+                <img src="photos/thumbnails/IMG_20231129_135242~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 30/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(30)">
+                <img src="photos/thumbnails/IMG_20231129_135307~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 31/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(31)">
+                <img src="photos/thumbnails/IMG_20231129_135330~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 32/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(32)">
+                <img src="photos/thumbnails/IMG_20231129_135343~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 33/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(33)">
+                <img src="photos/thumbnails/IMG_20231129_135413~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 34/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(34)">
+                <img src="photos/thumbnails/IMG_20231202_132914~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 35/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(35)">
+                <img src="photos/thumbnails/IMG_20231202_132926~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 36/37</div>
+                </div>
+            </div>
+            <div class="photo-card" onclick="openLightbox(36)">
+                <img src="photos/thumbnails/IMG_20231202_133401~2.jpg" alt="Vue de l'appartement" loading="lazy">
+                <div class="photo-overlay">
+                    <div class="photo-number">Photo 37/37</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox moderne avec navigation -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightbox(event)">
+            <i class="fas fa-times"></i>
+        </button>
+        <button class="lightbox-nav lightbox-prev" onclick="previousImage(event)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="lightbox-content">
+            <img id="lightboxImage" src="" alt="Image en grand">
+        </div>
+        <button class="lightbox-nav lightbox-next" onclick="nextImage(event)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="lightbox-counter" id="lightboxCounter">1 / 37</div>
+    </div>
+    <script>
+        // Tableau des images avec leurs chemins
+        const images = [
+            'photos/IMG_20231129_131418~2.jpg',
+            'photos/IMG_20231129_131818~2.jpg',
+            'photos/IMG_20231129_131849~2.jpg',
+            'photos/IMG_20231129_131957~2.jpg',
+            'photos/IMG_20231129_132005~2.jpg',
+            'photos/IMG_20231129_132254~2.jpg',
+            'photos/IMG_20231129_132338~2.jpg',
+            'photos/IMG_20231129_132401~2.jpg',
+            'photos/IMG_20231129_132618~2.jpg',
+            'photos/IMG_20231129_133205~2.jpg',
+            'photos/IMG_20231129_133320~2.jpg',
+            'photos/IMG_20231129_133337~2.jpg',
+            'photos/IMG_20231129_133449~2.jpg',
+            'photos/IMG_20231129_133651~2.jpg',
+            'photos/IMG_20231129_133724~2.jpg',
+            'photos/IMG_20231129_133745~2.jpg',
+            'photos/IMG_20231129_133844~2.jpg',
+            'photos/IMG_20231129_133933~2.jpg',
+            'photos/IMG_20231129_134029~2.jpg',
+            'photos/IMG_20231129_134046~2.jpg',
+            'photos/IMG_20231129_134118~2.jpg',
+            'photos/IMG_20231129_134144~2.jpg',
+            'photos/IMG_20231129_134158~2.jpg',
+            'photos/IMG_20231129_134257~2.jpg',
+            'photos/IMG_20231129_134331~2.jpg',
+            'photos/IMG_20231129_134539~2.jpg',
+            'photos/IMG_20231129_134716~2.jpg',
+            'photos/IMG_20231129_135016~2.jpg',
+            'photos/IMG_20231129_135202~2.jpg',
+            'photos/IMG_20231129_135242~2.jpg',
+            'photos/IMG_20231129_135307~2.jpg',
+            'photos/IMG_20231129_135330~2.jpg',
+            'photos/IMG_20231129_135343~2.jpg',
+            'photos/IMG_20231129_135413~2.jpg',
+            'photos/IMG_20231202_132914~2.jpg',
+            'photos/IMG_20231202_132926~2.jpg',
+            'photos/IMG_20231202_133401~2.jpg'
+        ];
+
+        let currentImageIndex = 0;
+        let lightboxOpen = false;
+
+        // Animation d'entrée des cartes
+        function animateCards() {
+            const cards = document.querySelectorAll('.photo-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.05}s`;
+            });
+        }
+
+        // Ouvrir la lightbox
+        function openLightbox(index) {
+            currentImageIndex = index;
+            lightboxOpen = true;
+            showImage();
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Empêche le scroll de la page
+        }
+
+        // Fermer la lightbox
+        function closeLightbox(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            lightboxOpen = false;
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = ''; // Restore scroll
+        }
+
+        // Afficher l'image actuelle
+        function showImage() {
+            const lightboxImage = document.getElementById('lightboxImage');
+            const counter = document.getElementById('lightboxCounter');
+            
+            lightboxImage.style.opacity = '0';
+            setTimeout(() => {
+                lightboxImage.src = images[currentImageIndex];
+                lightboxImage.style.opacity = '1';
+                counter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+            }, 150);
+        }
+
+        // Image précédente
+        function previousImage(event) {
+            event.stopPropagation();
+            currentImageIndex = currentImageIndex > 0 ? currentImageIndex - 1 : images.length - 1;
+            showImage();
+        }
+
+        // Image suivante
+        function nextImage(event) {
+            event.stopPropagation();
+            currentImageIndex = currentImageIndex < images.length - 1 ? currentImageIndex + 1 : 0;
+            showImage();
+        }
+
+        // Gestion des gestes tactiles pour mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function handleTouchStart(event) {
+            touchStartX = event.changedTouches[0].screenX;
+        }
+
+        function handleTouchEnd(event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        }
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) {
+                    previousImage(new Event('swipe'));
+                } else {
+                    nextImage(new Event('swipe'));
+                }
+            }
+        }
+
+        // Gestion des raccourcis clavier
+        function handleKeyboard(event) {
+            if (!lightboxOpen) return;
+            
+            switch(event.key) {
+                case 'Escape':
+                    closeLightbox();
+                    break;
+                case 'ArrowLeft':
+                    previousImage(event);
+                    break;
+                case 'ArrowRight':
+                    nextImage(event);
+                    break;
+            }
+        }
+
+        // Lazy loading des images
+        function setupLazyLoading() {
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.classList.add('loaded');
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                images.forEach(img => imageObserver.observe(img));
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            animateCards();
+            setupLazyLoading();
+            
+            // Event listeners
+            document.addEventListener('keydown', handleKeyboard);
+            
+            const lightbox = document.getElementById('lightbox');
+            lightbox.addEventListener('touchstart', handleTouchStart);
+            lightbox.addEventListener('touchend', handleTouchEnd);
+            
+            // Empêcher la fermeture de la lightbox si on clique sur l'image
+            document.getElementById('lightboxImage').addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+    </script>
+
+</body>
+</html>
