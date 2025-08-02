@@ -33,7 +33,7 @@ Une galerie photo moderne et responsive pour présenter un appartement à louer.
 
 - **Navigation intuitive** avec boutons précédent/suivant
 - **Compteur d'images** (ex: 1/37)
-- **Gestes tactiles** pour naviguer sur mobile (swipe gauche/droite)
+- **Zoom tactile** sur mobile pour voir les détails des photos
 - **Raccourcis clavier** :
   - `←` / `→` : Navigation entre les images
   - `Échap` : Fermer la lightbox
@@ -43,7 +43,8 @@ Une galerie photo moderne et responsive pour présenter un appartement à louer.
 ### 📱 Optimisation Mobile
 
 - **Interface tactile** optimisée pour smartphones
-- **Gestes swipe** pour navigation naturelle
+- **Zoom sur les photos** pour voir les détails en haute résolution
+- **Boutons de navigation** adaptés aux écrans tactiles
 - **Tailles adaptatives** pour une lisibilité parfaite
 - **Performance optimisée** sur connexions lentes
 
@@ -163,7 +164,6 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 
 Pour toute question concernant l'appartement ou le projet :
 
-- 📧 Email : [votre-email@example.com]
 - 🐙 GitHub : [@saumon](https://github.com/saumon)
 
 ---

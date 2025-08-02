@@ -734,32 +734,6 @@
             showImage();
         }
 
-        // Gestion des gestes tactiles pour mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        function handleTouchStart(event) {
-            touchStartX = event.changedTouches[0].screenX;
-        }
-
-        function handleTouchEnd(event) {
-            touchEndX = event.changedTouches[0].screenX;
-            handleSwipe();
-        }
-
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            const swipeDistance = touchEndX - touchStartX;
-            
-            if (Math.abs(swipeDistance) > swipeThreshold) {
-                if (swipeDistance > 0) {
-                    previousImage(new Event('swipe'));
-                } else {
-                    nextImage(new Event('swipe'));
-                }
-            }
-        }
-
         // Gestion des raccourcis clavier
         function handleKeyboard(event) {
             if (!lightboxOpen) return;
@@ -803,10 +777,6 @@
             
             // Event listeners
             document.addEventListener('keydown', handleKeyboard);
-            
-            const lightbox = document.getElementById('lightbox');
-            lightbox.addEventListener('touchstart', handleTouchStart);
-            lightbox.addEventListener('touchend', handleTouchEnd);
             
             // Empêcher la fermeture de la lightbox si on clique sur l'image
             document.getElementById('lightboxImage').addEventListener('click', function(event) {
