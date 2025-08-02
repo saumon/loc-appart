@@ -167,6 +167,36 @@
             transition: opacity 0.3s ease;
         }
 
+        /* Loader pour la lightbox */
+        .lightbox-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: rgba(255, 255, 255, 0.8);
+            animation: lightboxSpin 1s ease-in-out infinite;
+            z-index: 1002;
+        }
+
+        @keyframes lightboxSpin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .lightbox-loader.hidden {
+            display: none;
+        }
+
+        /* Style pour l'image en cours de chargement */
+        .lightbox img.loading {
+            opacity: 0;
+        }
+
         .lightbox-nav {
             position: absolute;
             top: 50%;
@@ -628,6 +658,7 @@
             <i class="fas fa-chevron-left"></i>
         </button>
         <div class="lightbox-content">
+            <div class="lightbox-loader" id="lightboxLoader"></div>
             <img id="lightboxImage" src="" alt="Image en grand">
         </div>
         <button class="lightbox-nav lightbox-next" onclick="nextImage(event)">
@@ -692,6 +723,11 @@
         function openLightbox(index) {
             currentImageIndex = index;
             lightboxOpen = true;
+            
+            // Initialiser le loader comme visible
+            const loader = document.getElementById('lightboxLoader');
+            loader.classList.remove('hidden');
+            
             showImage();
             document.getElementById('lightbox').classList.add('active');
             document.body.style.overflow = 'hidden'; // Empêche le scroll de la page
@@ -711,13 +747,33 @@
         function showImage() {
             const lightboxImage = document.getElementById('lightboxImage');
             const counter = document.getElementById('lightboxCounter');
+            const loader = document.getElementById('lightboxLoader');
             
+            // Afficher le loader et masquer l'image
+            loader.classList.remove('hidden');
             lightboxImage.style.opacity = '0';
-            setTimeout(() => {
-                lightboxImage.src = images[currentImageIndex];
+            
+            // Créer une nouvelle image pour précharger
+            const newImage = new Image();
+            
+            newImage.onload = function() {
+                // Quand l'image est chargée, l'afficher et masquer le loader
+                lightboxImage.src = newImage.src;
+                lightboxImage.style.opacity = '1';
+                loader.classList.add('hidden');
+                counter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+            };
+            
+            newImage.onerror = function() {
+                // En cas d'erreur de chargement
+                console.error('Erreur lors du chargement de l\'image:', images[currentImageIndex]);
+                loader.classList.add('hidden');
                 lightboxImage.style.opacity = '1';
                 counter.textContent = `${currentImageIndex + 1} / ${images.length}`;
-            }, 150);
+            };
+            
+            // Commencer le chargement
+            newImage.src = images[currentImageIndex];
         }
 
         // Image précédente
